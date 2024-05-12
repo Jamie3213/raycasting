@@ -4,23 +4,25 @@ from pygame import Color
 
 import utils
 
+FPS_LIMIT = 144
+
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
 WORLD = [
-    [1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ]
 
 CELL_WIDTH = SCREEN_WIDTH // len(WORLD[0])
@@ -29,6 +31,7 @@ CELL_RESOLUTION = (CELL_WIDTH, CELL_HEIGHT)
 
 
 def main() -> None:
+    pygame.time.Clock().tick(FPS_LIMIT)
     screen = pygame.display.set_mode(SCREEN_SIZE)
 
     while True:
@@ -40,8 +43,8 @@ def main() -> None:
         screen.fill(Color("black"))
         utils.render_world(WORLD, CELL_RESOLUTION, screen)
 
-        player_start = (100, 100)
-        pygame.draw.circle(screen, Color("red"), player_start, 5)
+        mouse_position = pygame.mouse.get_pos()
+        utils.cast_rays(mouse_position, screen)
 
         pygame.display.flip()
 
