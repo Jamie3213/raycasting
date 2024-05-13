@@ -1,4 +1,4 @@
-import utils
+from utils import Player, World
 
 import pygame
 import sys
@@ -8,10 +8,23 @@ SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 480
 SCREEN_SIZE = (SCREEN_WIDTH, SCREEN_HEIGHT)
 
+WORLD_MAP = [
+    [1, 1, 1, 1, 1, 1, 1, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 0, 1],
+    [1, 0, 0, 1, 0, 0, 0, 1],
+    [1, 1, 1, 1, 0, 0, 0, 1],
+    [1, 0, 0, 0, 0, 0, 0, 1],
+    [1, 1, 1, 1, 1, 1, 1, 1],
+]
+
 
 def main() -> None:
     pygame.time.Clock().tick(FPS_LIMIT)
     screen = pygame.display.set_mode(SCREEN_SIZE)
+    world = World(WORLD_MAP)
+    player = Player(start=(320, 240))
 
     while True:
         for event in pygame.event.get():
@@ -19,14 +32,10 @@ def main() -> None:
                 pygame.quit()
                 sys.exit()
 
+        player.move()
         screen.fill(pygame.Color("black"))
-
-        boundary = utils.Line((500, 50), (500, 350))
-        utils.render_boundary(boundary, screen)
-
-        mouse_position = pygame.mouse.get_pos()
-        utils.cast_rays(mouse_position, boundary, screen)
-
+        world.render(screen)
+        player.render(screen)
         pygame.display.flip()
 
 
