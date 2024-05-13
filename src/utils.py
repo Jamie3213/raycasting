@@ -49,17 +49,17 @@ class Player:
         self._size = 5
         self._view_distance = 100
         self._current_direction = self._get_initial_direction()
-        self._mouse_position = pygame.mouse.get_pos()
+        self._current_angle = 0
+        self._previous_mouse_position = _get_mouse_position()
+        pygame.mouse.set_pos([self._x, self._y])  # Set initial mouse position
+        pygame.mouse.set_visible(False)  # Hide the mouse cursor
+        pygame.event.set_grab(True)  # Confine the mouse cursor to the game window
 
     def render(self, screen: Surface) -> None:
         current_position = self._get_position()
-
-        if self._mouse_position != pygame.mouse.get_pos():
-            self._mouse_position = pygame.mouse.get_pos()
-            self._current_direction = self._get_direction()
-
+        current_direction = self._get_direction()
         pygame.draw.circle(screen, Color("red"), current_position, self._size)
-        pygame.draw.line(screen, Color("red"), current_position, self._current_direction)
+        pygame.draw.line(screen, Color("red"), current_position, current_direction)
 
     def move(self) -> None:
         keys = pygame.key.get_pressed()
@@ -83,16 +83,18 @@ class Player:
         # As the player moves the mouse left and right, the
         # direction should rotate clockwise or anti-clockwise,
         # respectively.
-        cur_x, cur_y = self._get_position()
-        mouse_x, mouse_y = pygame.mouse.get_pos()
-        dx, dy = mouse_x - cur_x, mouse_y - cur_y
-        angle = math.atan2(dy, dx)
-        
-        dir_x = cur_x + self._view_distance * math.cos(angle)
-        dir_y = cur_y + self._view_distance * math.sin(angle)
+        cur_mouse_x, cur_mouse_y = _get_mouse_position()
+        prev_mouse_x, _ = self._previous_mouse_position
+        delta_x, _ = pygame.mouse.get_rel()  # Get the mouse movement delta
+        increment = delta_x * 0.01
 
+        self._current_angle = (self._current_angle + increment) % (2 * math.pi)
+
+        dir_x = self._x + self._view_distance * math.cos(self._current_angle)
+        dir_y = self._y + self._view_distance * math.sin(self._current_angle)
+
+        self._previous_mouse_position = (cur_mouse_x, cur_mouse_y)
         return dir_x, dir_y
-
 
 class Ray:
     def __init__(self, start: Point, angle: float) -> None:
@@ -103,6 +105,10 @@ class Ray:
     def _get_slope(self) -> float:
         return math.tan(self.angle)
     
+
+def _get_mouse_position() -> Point:
+    return pygame.mouse.get_pos()
+
 
 # def _calculate_y_intercept(start: Point, slope: float | None) -> float:
 #     x, y = start
