@@ -32,10 +32,12 @@ def main() -> None:
                 pygame.quit()
                 sys.exit()
 
-        player.move()
         screen.fill(pygame.Color("black"))
+
+        player.move()
         world.render(screen)
         player.render(screen)
+
         pygame.display.flip()
 
 

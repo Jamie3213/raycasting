@@ -20,20 +20,20 @@ class World:
 
     def _parse(self, cell_size: tuple[int, int]) -> list[Rect]:
         rects = []
+        border = 1
         cell_width, cell_height = cell_size
         for y, row in enumerate(self._world_map):
             for x, cell in enumerate(row):
                 if cell == 1:
                     rect = Rect(
-                        x * cell_width - 1,
-                        y * cell_height - 1,
-                        cell_width - 1,
-                        cell_height - 1,
+                        (x * cell_width) - border,
+                        (y * cell_height) - border,
+                        cell_width - border,
+                        cell_height - border,
                     )
                     rects.append(rect)
 
         return rects
-
 
     def _get_cell_size(self, screen: Surface) -> tuple[int, int]:
         width, height = screen.get_size()
@@ -43,36 +43,64 @@ class World:
     
 
 class Player:
-    speed = 0.1
-
     def __init__(self, start: Point) -> None:
         self._x, self._y = start
+        self._speed = 0.1
+        self._size = 5
+        self._view_distance = 100
+        self._current_direction = self._get_initial_direction()
+        self._mouse_position = pygame.mouse.get_pos()
 
     def render(self, screen: Surface) -> None:
-        current_postion = self._get_current_pos()
-        pygame.draw.circle(screen, Color("red"), current_postion, 5)
+        current_position = self._get_position()
 
-    def _get_current_pos(self) -> Point:
-        return self._x, self._y
+        if self._mouse_position != pygame.mouse.get_pos():
+            self._mouse_position = pygame.mouse.get_pos()
+            self._current_direction = self._get_direction()
+
+        pygame.draw.circle(screen, Color("red"), current_position, self._size)
+        pygame.draw.line(screen, Color("red"), current_position, self._current_direction)
 
     def move(self) -> None:
         keys = pygame.key.get_pressed()
         if keys[pygame.K_w]:
-            self._y -= self.speed
+            self._y -= self._speed
         if keys[pygame.K_s]:
-            self._y += self.speed
+            self._y += self._speed
         if keys[pygame.K_a]:
-            self._x -= self.speed
+            self._x -= self._speed
         if keys[pygame.K_d]:
-            self._x += self.speed
+            self._x += self._speed
+
+    def _get_initial_direction(self) -> tuple[float, float]:
+        # Start the player facing forwards.
+        return self._x, self._y - self._view_distance
+
+    def _get_position(self) -> Point:
+        return self._x, self._y
+
+    def _get_direction(self) -> Point:
+        # As the player moves the mouse left and right, the
+        # direction should rotate clockwise or anti-clockwise,
+        # respectively.
+        cur_x, cur_y = self._get_position()
+        mouse_x, mouse_y = pygame.mouse.get_pos()
+        dx, dy = mouse_x - cur_x, mouse_y - cur_y
+        angle = math.atan2(dy, dx)
+        
+        dir_x = cur_x + self._view_distance * math.cos(angle)
+        dir_y = cur_y + self._view_distance * math.sin(angle)
+
+        return dir_x, dir_y
+
 
 class Ray:
     def __init__(self, start: Point, angle: float) -> None:
-        self.start = start
-        self.angle = angle
-        self.slope = self._slope()
+        self._start = start
+        self._angle = angle
+        self._slope = self._get_slope()
 
-    def _slope(self) -> float:
+    def _get_slope(self) -> float:
         return math.tan(self.angle)
     
 
