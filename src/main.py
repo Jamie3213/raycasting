@@ -1,8 +1,9 @@
+import utils
+
 from player import Player
 from world import World
 
 import pygame
-import sys
 
 FPS_LIMIT = 60
 SCREEN_SIZE = (640, 480)
@@ -21,22 +22,24 @@ WORLD_MAP = [
 
 
 def main() -> None:
-    pygame.time.Clock().tick(FPS_LIMIT)
-    screen = pygame.display.set_mode(SCREEN_SIZE)
+    pygame.init()
+
+    screen = utils.create_screen(SCREEN_SIZE)
+    utils.set_fps_limit(FPS_LIMIT)
+    utils.set_mouse_config()
 
     world = World(WORLD_MAP)
     player = Player(PLAYER_START)
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+        events = pygame.event.get()
+        utils.handle_events(events)
 
         screen.fill(pygame.Color("black"))
 
         world.render(screen)
         player.move()
+        player.cast_ray()
         player.render(screen)
 
         pygame.display.flip()

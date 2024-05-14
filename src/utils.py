@@ -1,71 +1,40 @@
+import sys
+
 import pygame
+from pygame.event import Event
+from pygame.surface import Surface
+
+
+def set_mouse_config() -> None:
+    # Hide cursor and confine mouse to window.
+    pygame.mouse.set_visible(False)
+    pygame.event.set_grab(True)
+
+
+def set_fps_limit(limit: int) -> None:
+    pygame.time.Clock().tick(limit)
+
+
+def create_screen(size: tuple[int, int]) -> Surface:
+    return pygame.display.set_mode(size)
+
+
+def handle_events(events: list[Event]) -> None:
+    for event in events:
+        match event.type:
+            case pygame.QUIT: _quit()
+            case pygame.KEYDOWN: _handle_key_press(event)
 
 
 def get_mouse_position() -> tuple[int, int]:
     return pygame.mouse.get_pos()
 
 
-# import math
-
-# import pygame
-# from pygame import Color, Rect, Surface
-
-# class Ray:
-#     def __init__(self, start: Point, angle: float) -> None:
-#         self._start = start
-#         self._angle = angle
-#         self._slope = self._get_slope()
-
-#     def _get_slope(self) -> float:
-#         return math.tan(self.angle)
+def _quit() -> None:
+    pygame.quit()
+    sys.exit()
 
 
-# def _calculate_y_intercept(start: Point, slope: float | None) -> float:
-#     x, y = start
-#     return None if slope is None else y - (slope * x)
-
-
-# def render_boundary(boundary: Line, screen: Surface) -> None:
-#     pygame.draw.line(
-#         screen, Color("white"), boundary.start, boundary.end
-#     )
-
-
-# def cast_rays(start: Point, boundary: Line, screen: Surface) -> None:
-#     number_of_rays = 360
-#     angles = [math.radians(angle) for angle in range(number_of_rays)]
-
-#     for angle in angles:
-#         ray = Ray(start, angle)
-#         intersect = _calculate_intersect(ray, boundary)
-#         if intersect is not None:
-#             pygame.draw.circle(screen, Color("red"), start, 2)
-#             pygame.draw.circle(screen, Color("red"), intersect, 2)
-#             pygame.draw.line(screen, Color("white"), start, intersect)
-        
-
-# def _calculate_intersect(ray: Ray, boundary: Line) -> Point | None:
-#     are_parallel = ray.slope == boundary.slope
-#     if are_parallel:
-#         return None
-    
-#     x_int = (
-#         boundary.start[0]
-#         if boundary.slope is None
-#         else (boundary.y_intercept - ray.y_intercept) / (ray.slope - boundary.slope)
-#     )
-#     y_int = (ray.slope * x_int) + ray.y_intercept
-
-#     intersect = (x_int, y_int)
-
-#     if _is_on_line_segment(intersect, boundary):
-#         return intersect
-
-#     return None
-
-
-# def _is_on_line_segment(point: Point, line: Line) -> bool:
-#     x, y = point
-#     x1, y1 = line.start
-#     x2, y2 = line.end
-#     return (x1 <= x <= x2 or x2 <= x <= x1) and (y1 <= y <= y2 or y2 <= y <= y1)
+def _handle_key_press(event: Event) -> None:
+    match event.key:
+        case pygame.K_ESCAPE: _quit()
