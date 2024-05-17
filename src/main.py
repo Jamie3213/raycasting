@@ -1,6 +1,6 @@
 import utils
 
-from player import Player
+from camera import Camera
 from world import World
 
 import pygame
@@ -29,7 +29,7 @@ def main() -> None:
     utils.set_mouse_config()
 
     world = World(WORLD_MAP)
-    player = Player(PLAYER_START)
+    camera = Camera(PLAYER_START, world, screen)
 
     while True:
         events = pygame.event.get()
@@ -38,9 +38,10 @@ def main() -> None:
         screen.fill(pygame.Color("black"))
 
         world.render(screen)
-        player.move()
-        player.cast_ray()
-        player.render(screen)
+        camera.move()
+        camera.turn()
+        camera.render(screen)
+        camera.cast_ray(world, screen)
 
         pygame.display.flip()
 
