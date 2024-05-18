@@ -23,14 +23,14 @@ class World:
         cell_width, cell_height = cell_size
         for y, row in enumerate(self.world_map):
             for x, cell in enumerate(row):
-                if cell == 1:
-                    rect = Rect(
-                        (x * cell_width) - self._border,
-                        (y * cell_height) - self._border,
-                        cell_width - self._border,
-                        cell_height - self._border,
-                    )
-                    rects.append(rect)
+                # if cell == 1:
+                rect = Rect(
+                    (x * cell_width) - self._border,
+                    (y * cell_height) - self._border,
+                    cell_width - self._border,
+                    cell_height - self._border,
+                )
+                rects.append(rect)
 
         return rects
 

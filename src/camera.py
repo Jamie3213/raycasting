@@ -6,6 +6,9 @@ import pygame
 from pygame import Color, Surface
 
 
+def sign(a: float) -> int:
+    return 1 if a >= 0 else -1
+
 class Camera:
     def __init__(
         self,
@@ -44,58 +47,29 @@ class Camera:
         increment = delta_x * self._turn_speed
         self._current_angle = (self._current_angle + increment) % (2 * math.pi)
 
-    def cast_ray(self, world: World, screen: Surface) -> None:
-        screen_position = (self._x, self._y)
-        world_position = self._to_world_coords(screen_position)
-        snapped_position = self._snap_to_grid(world_position)
+    def cast_ray(self) -> None:
+        screen_start = (self._x, self._y)
+        start_x, start_y = self._to_world_coords(screen_start)
 
-        # Work out how much we move in the x and y direction for
-        # each unit step along a ray point in the direction of the
-        # player's view.
         angle = self._current_angle
         dx, dy = math.cos(angle), math.sin(angle)
         
-        # We can paratmetrise a ray start with start point (x0, y0)
-        # on the world grid as (x0 + t_x * dx, y0 + t * dy) where t is
-        # the distance along the ray. For the DDA line algorithm, we
-        # essentially want to know how far we move along the ray when
-        # we move one unit in the x or y direction. When dx is large,
-        # we move further along the ray for each unit step in the x
-        # direction compared to when dx is small. Moving one unit in
-        # the x direction means moving from x to x + 1, i.e., we want
-        # to know the valu of t such that t * dx = 1, which means that
-        # t = 1 / abs(dx) (and the same applies to dy).
-        step_x, step_y = 1 / abs(dx), 1 / abs(dy)
-        world_x, world_y = world_position
-        snapped_x, snapped_y = snapped_position
-    
-        dist_x = (
-            (snapped_x + 1 - world_x) * step_x
-            if dx > 0
-            else (world_x - snapped_x) * step_x
-        )
-        dist_y = (
-            (snapped_y + 1 - world_y) * step_y
-            if dy > 0
-            else (world_y - snapped_y) * step_y
-        )
+        next_vx = math.ceil(start_x) if dx > 0 else math.floor(start_x)
+        next_vy = start_y + (next_vx - start_x) * (dy / dx)
 
-        while True:
-            if dist_x < dist_y:
-                snapped_x += 1 if dx > 0 else -1
-                dist_x += step_x
-            else:
-                snapped_y += 1 if dy > 0 else -1
-                dist_y += step_y
+        next_hy = math.ceil(start_y) if dy > 0 else math.floor(start_y)
+        next_hx = start_x + (next_hy - start_y) * (dx / dy)
 
-            if world.is_wall(snapped_x, snapped_y):
-                ray_start = screen_position
-                intersection = (dist_x, dist_y)
-                ray_end = self._to_screen_coords(intersection)
-                pygame.draw.line(screen, self._colour, ray_start, ray_end)
-                pygame.draw.circle(screen, Color("blue"), ray_end, self._size)
-                break
-    
+        next_v = (next_vx, next_vy)
+        next_y = (next_hx, next_hy)
+
+        screen_v = self._to_screen_coords(next_v)
+        screen_y = self._to_screen_coords(next_y)
+
+        pygame.draw.line(self._screen, self._colour, screen_start, screen_v)
+        pygame.draw.circle(self._screen, Color("blue"), screen_v, self._size)
+        pygame.draw.circle(self._screen, Color("green"), screen_y, self._size)
+
     def _to_world_coords(self, screen_coords: tuple[float, float]) -> tuple[float, float]:
         cell_width, cell_height = self._world.get_cell_size(self._screen)
         pos_x, pos_y = screen_coords
