@@ -8,7 +8,7 @@ from pygame.surface import Surface
 def set_mouse_config() -> None:
     # Hide cursor and confine mouse to window.
     pygame.mouse.set_visible(False)
-    pygame.event.set_grab(True)
+    # pygame.event.set_grab(True)
 
 
 def set_fps_limit(limit: int) -> None:

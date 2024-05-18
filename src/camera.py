@@ -49,26 +49,62 @@ class Camera:
 
     def cast_ray(self) -> None:
         screen_start = (self._x, self._y)
-        start_x, start_y = self._to_world_coords(screen_start)
+        world_start = self._to_world_coords(screen_start)
+        snapped_start = self._snap_to_grid(world_start)
 
         angle = self._current_angle
         dx, dy = math.cos(angle), math.sin(angle)
-        
-        next_vx = math.ceil(start_x) if dx > 0 else math.floor(start_x)
-        next_vy = start_y + (next_vx - start_x) * (dy / dx)
 
-        next_hy = math.ceil(start_y) if dy > 0 else math.floor(start_y)
-        next_hx = start_x + (next_hy - start_y) * (dx / dy)
+        world_x, world_y = world_start
+        snapped_x, snapped_y = snapped_start
 
-        next_v = (next_vx, next_vy)
-        next_y = (next_hx, next_hy)
+        # Calculate the distance to the next vertical grid intersection.
+        intersect_vx = math.ceil(world_x) if dx > 0 else math.floor(world_x)
+        intersect_vy = world_y + (intersect_vx - world_x) * (dy / dx)
+        distance_v = math.hypot(intersect_vx, intersect_vy)
+            
+        # Calculate the distance to the next horizontal grid intersection.
+        intersect_hy = math.ceil(world_y) if dy > 0 else math.floor(world_y)
+        intersect_hx = world_x + (intersect_hy - world_y) * (dx / dy)
+        distance_h = math.hypot(intersect_hx, intersect_hy)
 
-        screen_v = self._to_screen_coords(next_v)
-        screen_y = self._to_screen_coords(next_y)
+        step_x = 1 if dx > 0 else -1
+        step_y = 1 if dy > 0 else -1
 
-        pygame.draw.line(self._screen, self._colour, screen_start, screen_v)
-        pygame.draw.circle(self._screen, Color("blue"), screen_v, self._size)
-        pygame.draw.circle(self._screen, Color("green"), screen_y, self._size)
+        intersections = []
+
+        while True:
+            if distance_v < distance_h:
+                intersection = (intersect_vx, intersect_vy)
+                intersections.append(intersection)
+
+                snapped_x += step_x
+                intersect_vx += step_x
+                intersect_vy += step_x * dy / dx
+                distance_v = math.hypot(intersect_vx, intersect_vy)
+            else:
+                intersection = (intersect_hx, intersect_hy)
+                intersections.append(intersection)
+
+                snapped_y += step_y
+                intersect_hy += step_y
+                intersect_hx += step_y * dx / dy
+                distance_h = math.hypot(intersect_hx, intersect_hy)
+
+            if self._world.is_wall(snapped_x, snapped_y):
+                ray_start = screen_start
+                last_intersection = intersections[-1]
+                ray_end = self._to_screen_coords(last_intersection)
+
+                pygame.draw.line(self._screen, self._colour, ray_start, ray_end)
+                pygame.draw.circle(self._screen, Color("blue"), ray_end, self._size)
+
+                for intersection in intersections[:-1]:
+                    print(intersection)
+                    pygame.draw.circle(self._screen, Color("green"), intersection, self._size)
+
+                break
+
 
     def _to_world_coords(self, screen_coords: tuple[float, float]) -> tuple[float, float]:
         cell_width, cell_height = self._world.get_cell_size(self._screen)
