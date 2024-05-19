@@ -9,6 +9,7 @@ import pygame
 FPS_LIMIT = 60
 SCREEN_SIZE = (640, 480)
 PLAYER_START = (320, 320)
+NUM_RAYS = 8
 
 WORLD_MAP = [
     [1, 1, 1, 1, 1, 1, 1, 1],
@@ -43,11 +44,10 @@ def main() -> None:
         player.render(screen)
 
         # Perform raycasting
-        num_rays = 8
         view_start = player.angle - (player.field_of_view / 2)
         view_end = player.angle + (player.field_of_view / 2)
-        view_step = (view_end - view_start) / num_rays
-        angles = [view_start + i * view_step for i in range(num_rays)]
+        view_step = (view_end - view_start) / NUM_RAYS
+        angles = [view_start + i * view_step for i in range(NUM_RAYS)]
 
         for angle in angles:
             ray_start = player.x, player.y
