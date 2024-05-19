@@ -14,7 +14,6 @@ class Player:
 
         self._movement_speed = self._get_movement_speed()
         self._turn_speed = 0.01
-        self._field_of_view = math.pi / 3
         self._size = 5
         self._color = Color("red")
 

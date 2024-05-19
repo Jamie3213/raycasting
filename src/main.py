@@ -5,12 +5,15 @@ from raycaster import Ray
 from world import World
 
 import pygame
+from pygame import Color
 
 FPS_LIMIT = 60
 SCREEN_SIZE = (640, 480)
 PLAYER_START = (320, 320)
 NUM_RAYS = 8
 
+# TODO - load maps from file instead of having the object
+# hardcoded in the source code.
 WORLD_MAP = [
     [1, 1, 1, 1, 1, 1, 1, 1],
     [1, 0, 0, 0, 0, 0, 0, 1],
@@ -26,10 +29,10 @@ WORLD_MAP = [
 def main() -> None:
     pygame.init()
 
+    screen = utils.create_screen(SCREEN_SIZE)
     utils.set_fps_limit(FPS_LIMIT)
     utils.set_mouse_config()
 
-    screen = utils.create_screen(SCREEN_SIZE)
     world = World(WORLD_MAP)
     player = Player(PLAYER_START)
 
@@ -37,6 +40,7 @@ def main() -> None:
         events = pygame.event.get()
         utils.handle_events(events)
 
+        screen.fill(Color("black"))
         world.render(screen)
 
         player.move()
