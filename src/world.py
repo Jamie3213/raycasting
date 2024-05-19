@@ -23,7 +23,6 @@ class World:
         cell_width, cell_height = cell_size
         for y, row in enumerate(self.world_map):
             for x, cell in enumerate(row):
-                # if cell == 1:
                 colour = Color("grey") if cell == 1 else Color("white")
                 rect = Rect(
                     (x * cell_width) - self._border,
