@@ -20,7 +20,7 @@ class Camera:
         self._current_angle = (-1) * math.pi / 2  # Start facing forwards.
         self._view_distance = 500
         self._field_of_view = math.pi / 3
-        self._size = 5
+        self._size = 3
         self._colour = Color("red")
 
     def render(self, screen: Surface) -> None:
@@ -43,12 +43,20 @@ class Camera:
         increment = delta_x * self._turn_speed
         self._current_angle = (self._current_angle + increment) % (2 * math.pi)
 
-    def cast_ray(self) -> None:
+    def cast_rays(self) -> None:
+        view_start = self._current_angle - self._field_of_view / 2
+        view_end = self._current_angle + self._field_of_view / 2
+        view_step = math.pi / 18
+        num_rays = int((view_end - view_start) / view_step)
+        angles = [view_start + i * view_step for i in range(num_rays)]
+
+        for angle in angles:
+            self._cast_ray(angle)
+
+    def _cast_ray(self, angle: float) -> None:
         screen_start = (self._x, self._y)
         world_start = self._to_world_coords(screen_start)
         snapped_start = self._snap_to_grid(world_start)
-
-        angle = self._current_angle
         dx, dy = math.cos(angle), math.sin(angle)
 
         world_x, world_y = world_start
@@ -100,7 +108,6 @@ class Camera:
                     pygame.draw.circle(self._screen, Color("green"), screen_intersection, self._size)
 
                 break
-
 
     def _to_world_coords(self, screen_coords: tuple[float, float]) -> tuple[float, float]:
         cell_width, cell_height = self._world.get_cell_size(self._screen)

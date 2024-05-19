@@ -41,7 +41,7 @@ def main() -> None:
         camera.move()
         camera.turn()
         camera.render(screen)
-        camera.cast_ray()
+        camera.cast_rays()
 
         pygame.display.flip()
 
