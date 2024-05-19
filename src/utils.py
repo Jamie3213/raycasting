@@ -1,4 +1,3 @@
-import math
 import sys
 
 import pygame
@@ -29,6 +28,10 @@ def handle_events(events: list[Event]) -> None:
 
 def get_mouse_position() -> tuple[int, int]:
     return pygame.mouse.get_pos()
+
+
+def get_screen_size() -> tuple[int, int]:
+    return pygame.display.get_window_size()
 
 
 def _quit() -> None:

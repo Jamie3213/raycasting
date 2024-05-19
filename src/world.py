@@ -1,3 +1,5 @@
+import utils
+
 import pygame
 from pygame import Color, Rect, Surface
 
@@ -7,35 +9,37 @@ class World:
         self.world_map = world_map
         self.width = len(self.world_map[0])
         self.height = len(self.world_map)
+        self._wall_color = Color("grey")
+        self._floor_color = Color("white")
         self._border = 1
 
     def render(self, screen: Surface) -> None:
-        cell_size = self.get_cell_size(screen)
-        world = self._parse(cell_size)
-        for colour, cell in world:
-            pygame.draw.rect(screen, colour, cell)
+        grid_size = self.get_grid_size()
+        world = self._parse(grid_size)
+        for color, cell in world:
+            pygame.draw.rect(screen, color, cell)
 
     def is_wall(self, x: int, y: int) -> bool:
         return self.world_map[y][x] == 1
 
     def _parse(self, cell_size: tuple[int, int]) -> tuple[Color, list[Rect]]:
         rects = []
-        cell_width, cell_height = cell_size
+        grid_width, grid_height = cell_size
         for y, row in enumerate(self.world_map):
             for x, cell in enumerate(row):
-                colour = Color("grey") if cell == 1 else Color("white")
+                color = self._wall_color if cell == 1 else self._floor_color
                 rect = Rect(
-                    (x * cell_width) - self._border,
-                    (y * cell_height) - self._border,
-                    cell_width - self._border,
-                    cell_height - self._border,
+                    (x * grid_width) - self._border,
+                    (y * grid_height) - self._border,
+                    grid_width - self._border,
+                    grid_height - self._border,
                 )
-                rects.append((colour, rect))
+                rects.append((color, rect))
 
         return rects
 
-    def get_cell_size(self, screen: Surface) -> tuple[int, int]:
-        width, height = screen.get_size()
-        cell_width = width // self.width
-        cell_height = height // self.height
-        return cell_width, cell_height
+    def get_grid_size(self) -> tuple[int, int]:
+        screen_width, screen_height = utils.get_screen_size()
+        grid_width = screen_width // self.width
+        grid_height = screen_height // self.height
+        return grid_width, grid_height
