@@ -48,71 +48,45 @@ class Camera:
         world_start = self._to_world_coords(screen_start)
         snapped_start = self._snap_to_grid(world_start)
 
-        print(f"{screen_start=}")
-        print(f"{world_start=}")
-        print(f"{snapped_start=}")
-
         angle = self._current_angle
         dx, dy = math.cos(angle), math.sin(angle)
 
-        print(f"{angle=}")
-
         world_x, world_y = world_start
         snapped_x, snapped_y = snapped_start
-
-        # Calculate the distance to the next vertical grid intersection.
-        intersect_vx = math.ceil(world_x) if dx > 0 else math.floor(world_x)
-        intersect_vy = world_y + (intersect_vx - world_x) * (dy / dx)
-        distance_v = self._distance((world_x, world_y), (intersect_vx, intersect_vy))
-
-        print(f"intersect_v={(intersect_vx, intersect_vy)}")
-        print(f"{distance_v=}")
-            
-        # Calculate the distance to the next horizontal grid intersection.
-        intersect_hy = math.ceil(world_y) if dy > 0 else math.floor(world_y)
-        intersect_hx = world_x + (intersect_hy - world_y) * (dx / dy)
-        distance_h = self._distance((world_x, world_y), (intersect_hx, intersect_hy))
-
-        print(f"intersect_h={(intersect_hx, intersect_hy)}")
-        print(f"{distance_h=}")
-        print("\n\n")
 
         step_x = 1 if dx > 0 else -1
         step_y = 1 if dy > 0 else -1
 
         intersections = []
 
-        for _ in range(4):
+        while True:
+            next_grid_x = (
+                world_x + step_x
+                if int(world_x) == world_x
+                else math.ceil(world_x) if dx > 0 else math.floor(world_x)
+            )
+            intersect_vx = world_x + (next_grid_x - world_x)
+            intersect_vy = world_y + (intersect_vx - world_x) * (dy / dx)
+            distance_v = self._distance((world_x, world_y), (intersect_vx, intersect_vy))
+
+            next_grid_y = (
+                world_y + step_y
+                if int(world_y) == world_y
+                else math.ceil(world_y) if dy > 0 else math.floor(world_y)
+            )
+            intersect_hy = world_y + (next_grid_y - world_y)
+            intersect_hx = world_x + (intersect_hy - world_y) * (dx / dy)
+            distance_h = self._distance((world_x, world_y), (intersect_hx, intersect_hy))
+
             if distance_v < distance_h:
-                intersection = (intersect_vx, intersect_vy)
-                intersections.append(intersection)
-
                 snapped_x += step_x
-
-                world_x = intersect_vx
-                world_y = intersect_vy
-
-                intersect_vx += step_x
-                intersect_vy += step_x * dy / dx
-
-                distance_v = self._distance(
-                    (world_x, world_y), (intersect_vx, intersect_vy)
-                )
+                world_x, world_y = intersect_vx, intersect_vy
+                intersections.append((intersect_vx, intersect_vy))
             else:
-                intersection = (intersect_hx, intersect_hy)
-                intersections.append(intersection)
-
                 snapped_y += step_y
+                world_x, world_y = intersect_hx, intersect_hy
+                intersections.append((intersect_hx, intersect_hy))
 
-                world_x = intersect_vx
-                world_y = intersect_vy
-
-                intersect_hy += step_y
-                intersect_hx += step_y * dx / dy
-
-                distance_h = self._distance(
-                    (world_x, world_y), (intersect_hx, intersect_hy)
-                )
             if self._world.is_wall(snapped_x, snapped_y):
                 ray_start = screen_start
                 last_intersection = intersections[-1]
