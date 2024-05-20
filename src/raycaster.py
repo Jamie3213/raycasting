@@ -1,8 +1,9 @@
 import math
-from world import World
 
 import pygame
 from pygame import Color, Surface
+
+from world import World
 
 
 class Ray:
@@ -13,7 +14,7 @@ class Ray:
     ) -> None:
         self._x, self._y = start
         self._angle = angle
-        self._intersections = []
+        self._intersections: list[tuple[float, float]] = []
         self._line_color = Color("black")
         self._intersect_color = Color("green")
         self._end_point_color = Color("blue")
@@ -69,7 +70,7 @@ class Ray:
 
             if world.is_wall(grid_x, grid_y):
                 break
-            
+
     def render(self, screen: Surface) -> None:
         ray_start = (self._x, self._y)
         ray_end = self._intersections[-1]
@@ -77,7 +78,7 @@ class Ray:
         # Render non-wall intersection points
         for point in self._intersections[:-1]:
             pygame.draw.circle(screen, self._intersect_color, point, self._point_size)
-        
+
         # Render the ray and final wall intersection point
         pygame.draw.line(screen, self._line_color, ray_start, ray_end)
         pygame.draw.circle(screen, self._end_point_color, ray_end, self._point_size)
@@ -97,7 +98,7 @@ def _to_screen_coords(
     world_x, world_y = world_coords
     grid_width, grid_height = grid_size
     return world_x * grid_width, world_y * grid_height
-    
+
 
 def _snap_to_grid(world_coords: tuple[float, float]) -> tuple[int, int]:
     world_x, world_y = world_coords
@@ -109,4 +110,4 @@ def _distance(start: tuple[float, float], end: tuple[float, float]) -> float:
     end_x, end_y = end
     delta_x = end_x - start_x
     delta_y = end_y - start_y
-    return math.sqrt(delta_x ** 2 + delta_y ** 2)
+    return math.sqrt(delta_x**2 + delta_y**2)

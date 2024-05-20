@@ -22,8 +22,10 @@ def create_screen(size: tuple[int, int]) -> Surface:
 def handle_events(events: list[Event]) -> None:
     for event in events:
         match event.type:
-            case pygame.QUIT: _quit()
-            case pygame.KEYDOWN: _handle_key_press(event)
+            case pygame.QUIT:
+                _quit()
+            case pygame.KEYDOWN:
+                _handle_key_press(event)
 
 
 def get_mouse_position() -> tuple[int, int]:
@@ -41,4 +43,5 @@ def _quit() -> None:
 
 def _handle_key_press(event: Event) -> None:
     match event.key:
-        case pygame.K_ESCAPE: _quit()
+        case pygame.K_ESCAPE:
+            _quit()

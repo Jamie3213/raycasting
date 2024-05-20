@@ -1,2 +1,6 @@
+black==24.4.2
+isort==5.13.2
+mypy==1.10.0
+pre-commit==3.2.1
 pygame==2.5.2
 pytest==8.2.0

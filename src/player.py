@@ -1,9 +1,9 @@
-import utils
-
 import math
 
 import pygame
 from pygame import Color, Surface
+
+import utils
 
 
 class Player:
@@ -17,7 +17,7 @@ class Player:
         self._size = 5
         self._color = Color("red")
 
-    def _get_movement_speed(self) -> None:
+    def _get_movement_speed(self) -> float:
         screen_width, screen_height = utils.get_screen_size()
         screen_area = screen_width * screen_height
         speed_multipler = screen_area / 100_000
@@ -25,9 +25,9 @@ class Player:
         return base_speed * speed_multipler
 
     def move(self) -> None:
-        dx, dy = 0, 0
+        dx, dy = 0.0, 0.0
         keys = pygame.key.get_pressed()
-        
+
         if keys[pygame.K_w]:
             dy -= 1
         if keys[pygame.K_s]:

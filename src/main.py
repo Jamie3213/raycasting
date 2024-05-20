@@ -1,12 +1,12 @@
 import os
-import utils
-
-from player import Player
-from raycaster import Ray
-from world import World
 
 import pygame
 from pygame import Color
+
+import utils
+from player import Player
+from raycaster import Ray
+from world import World
 
 FPS_LIMIT = 60
 SCREEN_SIZE = (640, 480)
