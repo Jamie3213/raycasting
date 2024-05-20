@@ -33,7 +33,7 @@ def main() -> None:
         screen.fill(Color("black"))
         world.render(screen)
 
-        player.move()
+        player.move(world)
         player.turn()
         player.render(screen)
 
@@ -44,7 +44,7 @@ def main() -> None:
         angles = [view_start + i * view_step for i in range(NUM_RAYS)]
 
         for angle in angles:
-            ray_start = player.x, player.y
+            ray_start = player.position
             ray = Ray(ray_start, angle)
             ray.cast(world)
             ray.render(screen)

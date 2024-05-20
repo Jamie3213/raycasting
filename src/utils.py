@@ -1,3 +1,4 @@
+import math
 import sys
 
 import pygame
@@ -45,3 +46,32 @@ def _handle_key_press(event: Event) -> None:
     match event.key:
         case pygame.K_ESCAPE:
             _quit()
+
+
+def to_world_coords(
+    screen_coords: tuple[float, float], grid_size: tuple[int, int]
+) -> tuple[float, float]:
+    pos_x, pos_y = screen_coords
+    grid_width, grid_height = grid_size
+    return pos_x / grid_width, pos_y / grid_height
+
+
+def to_screen_coords(
+    world_coords: tuple[float, float], grid_size: tuple[int, int]
+) -> tuple[float, float]:
+    world_x, world_y = world_coords
+    grid_width, grid_height = grid_size
+    return world_x * grid_width, world_y * grid_height
+
+
+def snap_to_grid(world_coords: tuple[float, float]) -> tuple[int, int]:
+    world_x, world_y = world_coords
+    return math.floor(world_x), math.floor(world_y)
+
+
+def distance(start: tuple[float, float], end: tuple[float, float]) -> float:
+    start_x, start_y = start
+    end_x, end_y = end
+    delta_x = end_x - start_x
+    delta_y = end_y - start_y
+    return math.sqrt(delta_x**2 + delta_y**2)

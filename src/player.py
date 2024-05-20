@@ -4,11 +4,12 @@ import pygame
 from pygame import Color, Surface
 
 import utils
+from world import World
 
 
 class Player:
     def __init__(self, start: tuple[float, float]) -> None:
-        self.x, self.y = start
+        self.position = start
         self.angle = (-1) * math.pi / 2
         self.field_of_view = math.pi / 3
 
@@ -21,10 +22,10 @@ class Player:
         screen_width, screen_height = utils.get_screen_size()
         screen_area = screen_width * screen_height
         speed_multipler = screen_area / 100_000
-        base_speed = 0.05
+        base_speed = 0.03
         return base_speed * speed_multipler
 
-    def move(self) -> None:
+    def move(self, world: World) -> None:
         dx, dy = 0.0, 0.0
         keys = pygame.key.get_pressed()
 
@@ -43,8 +44,16 @@ class Player:
             dx = norm_dx * self._movement_speed
             dy = norm_dy * self._movement_speed
 
-        self.x += dx
-        self.y += dy
+            current_x, current_y = self.position
+            next_position = (current_x + dx, current_y + dy)
+
+            # Detect collisions with walls in the world grid.
+            grid_size = world.get_grid_size()
+            world_position = utils.to_world_coords(next_position, grid_size)
+            snapped_x, snapped_y = utils.snap_to_grid(world_position)
+
+            if not world.is_wall(snapped_x, snapped_y):
+                self.position = next_position
 
     def turn(self) -> None:
         delta_x, _ = pygame.mouse.get_rel()
@@ -52,5 +61,4 @@ class Player:
         self.angle = (self.angle + increment) % (2 * math.pi)
 
     def render(self, screen: Surface) -> None:
-        position = (self.x, self.y)
-        pygame.draw.circle(screen, self._color, position, self._size)
+        pygame.draw.circle(screen, self._color, self.position, self._size)
