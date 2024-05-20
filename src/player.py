@@ -26,6 +26,10 @@ class Player:
         return base_speed * speed_multipler
 
     def move(self, world: World) -> None:
+        self._walk(world)
+        self._turn()
+
+    def _walk(self, world: World) -> None:
         dx, dy = 0.0, 0.0
         keys = pygame.key.get_pressed()
 
@@ -55,7 +59,7 @@ class Player:
             if not world.is_wall(snapped_x, snapped_y):
                 self.position = next_position
 
-    def turn(self) -> None:
+    def _turn(self) -> None:
         delta_x, _ = pygame.mouse.get_rel()
         increment = delta_x * self._turn_speed
         self.angle = (self.angle + increment) % (2 * math.pi)

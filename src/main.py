@@ -34,7 +34,6 @@ def main() -> None:
         world.render(screen)
 
         player.move(world)
-        player.turn()
         player.render(screen)
 
         # Perform raycasting
