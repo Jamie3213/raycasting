@@ -1,3 +1,4 @@
+import os
 import utils
 
 from player import Player
@@ -12,19 +13,6 @@ SCREEN_SIZE = (640, 480)
 PLAYER_START = (320, 320)
 NUM_RAYS = 8
 
-# TODO - load maps from file instead of having the object
-# hardcoded in the source code.
-WORLD_MAP = [
-    [1, 1, 1, 1, 1, 1, 1, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 1],
-    [1, 0, 0, 1, 0, 0, 0, 1],
-    [1, 1, 1, 1, 0, 0, 0, 1],
-    [1, 0, 0, 0, 0, 0, 0, 1],
-    [1, 1, 1, 1, 1, 1, 1, 1],
-]
-
 
 def main() -> None:
     pygame.init()
@@ -33,7 +21,9 @@ def main() -> None:
     utils.set_fps_limit(FPS_LIMIT)
     utils.set_mouse_config()
 
-    world = World(WORLD_MAP)
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    world_file = os.path.join(current_dir, "..", "data", "world.txt")
+    world = World.from_file(world_file)
     player = Player(PLAYER_START)
 
     while True:

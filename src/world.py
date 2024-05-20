@@ -1,4 +1,5 @@
 import utils
+from typing import Self
 
 import pygame
 from pygame import Color, Rect, Surface
@@ -13,6 +14,18 @@ class World:
         self._floor_color = Color("white")
         self._border = 1
 
+    @classmethod
+    def from_file(cls, path: str) -> Self:
+        with open(path, mode="r") as file:
+            serialized_world = file.readlines()
+
+        rows = [
+            [int(elem) for elem in row.split(",")]
+            for row in serialized_world
+        ]
+
+        return cls(rows)
+
     def render(self, screen: Surface) -> None:
         grid_size = self.get_grid_size()
         world = self._parse(grid_size)
@@ -22,9 +35,9 @@ class World:
     def is_wall(self, x: int, y: int) -> bool:
         return self.world_map[y][x] == 1
 
-    def _parse(self, cell_size: tuple[int, int]) -> tuple[Color, list[Rect]]:
+    def _parse(self, grid_size: tuple[int, int]) -> tuple[Color, list[Rect]]:
         rects = []
-        grid_width, grid_height = cell_size
+        grid_width, grid_height = grid_size
         for y, row in enumerate(self.world_map):
             for x, cell in enumerate(row):
                 color = self._wall_color if cell == 1 else self._floor_color
