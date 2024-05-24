@@ -9,9 +9,9 @@ from raycaster import Ray
 from world import World
 
 FPS_LIMIT = 60
-SCREEN_SIZE = (640, 480)
-PLAYER_START = (320, 320)
-NUM_RAYS = 8
+SCREEN_SIZE = (800, 600)
+PLAYER_START = (400, 320)
+NUM_RAYS = 800
 
 
 def main() -> None:
@@ -31,10 +31,10 @@ def main() -> None:
         utils.handle_events(events)
 
         screen.fill(Color("black"))
-        world.render(screen)
+        # world.render(screen)
 
         player.move(world)
-        player.render(screen)
+        # player.render(screen)
 
         # Perform raycasting
         view_start = player.angle - (player.field_of_view / 2)
@@ -42,11 +42,11 @@ def main() -> None:
         view_step = (view_end - view_start) / NUM_RAYS
         angles = [view_start + i * view_step for i in range(NUM_RAYS)]
 
-        for angle in angles:
+        for index, angle in enumerate(angles):
             ray_start = player.position
             ray = Ray(ray_start, angle)
             ray.cast(world)
-            ray.render(screen)
+            ray.render(screen, index)
 
         pygame.display.flip()
 

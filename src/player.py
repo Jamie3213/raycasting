@@ -22,7 +22,7 @@ class Player:
         screen_width, screen_height = utils.get_screen_size()
         screen_area = screen_width * screen_height
         speed_multipler = screen_area / 100_000
-        base_speed = 0.03
+        base_speed = 0.5
         return base_speed * speed_multipler
 
     def move(self, world: World) -> None:
