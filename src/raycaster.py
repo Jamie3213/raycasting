@@ -85,13 +85,33 @@ class Ray:
     #     pygame.draw.line(screen, self._line_color, ray_start, ray_end)
     #     pygame.draw.circle(screen, self._end_point_color, ray_end, self._point_size)
 
-    def render(self, screen: Surface, ray_index: int) -> None:
-        player_position = self._position
+    def render(self, screen: Surface, ray_index: int, player_angle: float) -> None:
         wall_intersection = self._intersections[-1]
         screen_width, _ = utils.get_screen_size()
         screen_middle = screen_width // 2
-        distance_to_wall = utils.distance(player_position, wall_intersection)
-        wall_height = self._base_wall_height / distance_to_wall * 150
+
+        relative_angle = player_angle - self._angle
+        distance_to_wall = utils.distance(self._position, wall_intersection)
+        corrected_distance = distance_to_wall * math.cos(relative_angle)
+
+        wall_height = 150 * self._base_wall_height / corrected_distance
         wall_top = screen_middle - wall_height // 2
         wall_bottom = screen_middle + wall_height // 2
-        pygame.draw.line(screen, Color("green"), (ray_index, wall_top), (ray_index, wall_bottom))
+
+        wall_color = self._get_wall_color(wall_intersection)
+        pygame.draw.line(
+            screen,
+            wall_color,
+            (ray_index, wall_top),
+            (ray_index, wall_bottom),
+        )
+
+    @staticmethod
+    def _get_wall_color(intersection: tuple[float, float]) -> Color:
+        base_color = Color("green")
+        wall_x, wall_y = intersection
+        return (
+            base_color
+            if int(wall_x) == wall_x and int(wall_y) != wall_y
+            else utils.darken_color(base_color, 0.5)
+        )

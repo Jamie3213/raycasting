@@ -34,13 +34,17 @@ class Player:
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_w]:
-            dy -= 1
+            dx += math.cos(self.angle)
+            dy += math.sin(self.angle)
         if keys[pygame.K_s]:
-            dy += 1
+            dx -= math.cos(self.angle)
+            dy -= math.sin(self.angle)
         if keys[pygame.K_a]:
-            dx -= 1
+            dx -= math.cos(self.angle + math.pi / 2)
+            dy -= math.sin(self.angle + math.pi / 2)
         if keys[pygame.K_d]:
-            dx += 1
+            dx += math.cos(self.angle + math.pi / 2)
+            dy += math.sin(self.angle + math.pi / 2)
 
         if dx != 0 or dy != 0:
             length = math.hypot(dx, dy)
@@ -61,8 +65,7 @@ class Player:
 
     def _turn(self) -> None:
         delta_x, _ = pygame.mouse.get_rel()
-        increment = delta_x * self._turn_speed
-        self.angle = (self.angle + increment) % (2 * math.pi)
+        self.angle += delta_x * self._turn_speed
 
     def render(self, screen: Surface) -> None:
         pygame.draw.circle(screen, self._color, self.position, self._size)

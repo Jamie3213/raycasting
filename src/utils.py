@@ -2,6 +2,7 @@ import math
 import sys
 
 import pygame
+from pygame import Color
 from pygame.event import Event
 from pygame.surface import Surface
 
@@ -75,3 +76,8 @@ def distance(start: tuple[float, float], end: tuple[float, float]) -> float:
     delta_x = end_x - start_x
     delta_y = end_y - start_y
     return math.sqrt(delta_x**2 + delta_y**2)
+
+
+def darken_color(color: Color, scale: float) -> Color:
+    red, green, blue, alpha = color
+    return Color(int(red * scale), int(green * scale), int(blue * scale), alpha)
